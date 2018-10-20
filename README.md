@@ -6,6 +6,10 @@
 [![Total Downloads](https://poser.pugx.org/sunrise/stream/downloads)](https://packagist.org/packages/sunrise/stream)
 [![License](https://poser.pugx.org/sunrise/stream/license)](https://packagist.org/packages/sunrise/stream)
 
+## Awards
+
+[![SymfonyInsight](https://insight.symfony.com/projects/a6301a76-9b35-49a3-adb1-ebbf59f810f2/big.svg)](https://insight.symfony.com/projects/a6301a76-9b35-49a3-adb1-ebbf59f810f2)
+
 ## Installation
 
 ```

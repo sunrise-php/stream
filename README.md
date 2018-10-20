@@ -1,4 +1,4 @@
-# Stream wrapper for PHP 7.2 or more
+# Sunrise Stream
 
 [![Build Status](https://api.travis-ci.com/sunrise-php/stream.svg?branch=master)](https://travis-ci.com/sunrise-php/stream)
 [![CodeFactor](https://www.codefactor.io/repository/github/sunrise-php/stream/badge)](https://www.codefactor.io/repository/github/sunrise-php/stream)

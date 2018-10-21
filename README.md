@@ -1,4 +1,4 @@
-# Sunrise Stream (Stream Wrapper)
+# Simple Stream Wrapper for PHP 7.2+
 
 [![Build Status](https://api.travis-ci.com/sunrise-php/stream.svg?branch=master)](https://travis-ci.com/sunrise-php/stream)
 [![CodeFactor](https://www.codefactor.io/repository/github/sunrise-php/stream/badge)](https://www.codefactor.io/repository/github/sunrise-php/stream)
@@ -25,7 +25,7 @@ $handle = \fopen('http://php.net/', 'rb');
 
 $stream = new Stream($handle);
 
-var_dump($stream->toString());
+$stream->toString();
 
 $stream->close();
 ```
@@ -33,8 +33,3 @@ $stream->close();
 ## Api documentation
 
 https://phpdoc.fenric.ru/
-
-&nbsp;
-&nbsp;
-
-With :heart: for you

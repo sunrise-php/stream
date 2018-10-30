@@ -22,19 +22,17 @@ composer require sunrise/stream
 use Sunrise\Stream\Stream;
 use Sunrise\Stream\StreamFactory;
 
-$factory = new StreamFactory();
-
-// creates a new stream from the given string
-$stream = $factory->createStream('Hello, world!');
-
-// creates a new stream from the given filename or URI
-$stream = $factory->createStreamFromFile('http://php.net/', 'rb');
-
-// creates a new stream from the given resource
-$stream = $factory->createStreamFromResource(fopen(...));
-
 // creates a new stream without a factory
 $stream = new Stream(fopen(...));
+
+// creates a new stream from the given string
+$stream = (new StreamFactory)->createStream('Hello, world!');
+
+// creates a new stream from the given filename or URI
+$stream = (new StreamFactory)->createStreamFromFile('http://php.net/', 'rb');
+
+// creates a new stream from the given resource
+$stream = (new StreamFactory)->createStreamFromResource(fopen(...));
 
 // converts the stream to string without a magic
 $stream->toString();

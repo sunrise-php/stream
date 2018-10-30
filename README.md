@@ -1,4 +1,4 @@
-# Simple Stream wrapper for PHP 7.2+
+# Simple Stream wrapper for PHP 7.2+ based on PSR-7 and PSR-17
 
 [![Build Status](https://api.travis-ci.com/sunrise-php/stream.svg?branch=master)](https://travis-ci.com/sunrise-php/stream)
 [![CodeFactor](https://www.codefactor.io/repository/github/sunrise-php/stream/badge)](https://www.codefactor.io/repository/github/sunrise-php/stream)
@@ -16,20 +16,44 @@
 composer require sunrise/stream
 ```
 
-## How to use
+## How to use?
 
 ```php
 use Sunrise\Stream\Stream;
+use Sunrise\Stream\StreamFactory;
 
-$handle = \fopen('http://php.net/', 'rb');
+$factory = new StreamFactory();
 
-$stream = new Stream($handle);
+// creates a new stream from the given string
+$stream = $factory->createStream('Hello, world!');
 
+// creates a new stream from the given filename or URI
+$stream = $factory->createStreamFromFile('http://php.net/', 'rb');
+
+// creates a new stream from the given resource
+$stream = $factory->createStreamFromResource(fopen(...));
+
+// creates a new stream without a factory
+$stream = new Stream(fopen(...));
+
+// converts the stream to string without a magic
 $stream->toString();
 
+// closes the stream
 $stream->close();
+```
+
+## Test run
+
+```bash
+php vendor/bin/phpunit
 ```
 
 ## Api documentation
 
 https://phpdoc.fenric.ru/
+
+## Useful links
+
+https://www.php-fig.org/psr/psr-7/<br>
+https://www.php-fig.org/psr/psr-17/

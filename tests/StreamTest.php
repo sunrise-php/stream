@@ -3,12 +3,14 @@
 namespace Sunrise\Stream\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamInterface;
+use Sunrise\Stream\Exception\Exception;
 use Sunrise\Stream\Exception\InvalidArgumentException;
+use Sunrise\Stream\Exception\UnopenableStreamException;
 use Sunrise\Stream\Exception\UnreadableStreamException;
 use Sunrise\Stream\Exception\UnseekableStreamException;
 use Sunrise\Stream\Exception\UntellableStreamException;
 use Sunrise\Stream\Exception\UnwritableStreamException;
-use Sunrise\Stream\StreamInterface;
 use Sunrise\Stream\Stream;
 
 class StreamTest extends TestCase
@@ -240,6 +242,24 @@ class StreamTest extends TestCase
 		\fclose($handle);
 	}
 
+	public function testGetMetadataWithKey()
+	{
+		$handle = \fopen('php://memory', 'r+b');
+		$stream = new Stream($handle);
+
+		$this->assertEquals(
+			'php://memory',
+			$stream->getMetadata('uri')
+		);
+
+		$this->assertEquals(
+			null,
+			$stream->getMetadata('undefined')
+		);
+
+		\fclose($handle);
+	}
+
 	public function testGetSize()
 	{
 		$string = 'Hello, world!';
@@ -267,6 +287,20 @@ class StreamTest extends TestCase
 
 		\fwrite($handle, $string);
 		$this->assertEquals($string, $stream->toString());
+
+		\fclose($handle);
+	}
+
+	public function testMagicToString()
+	{
+		$string = 'Hello, world!';
+		$length = \strlen($string);
+
+		$handle = \fopen('php://memory', 'r+b');
+		$stream = new Stream($handle);
+
+		\fwrite($handle, $string);
+		$this->assertEquals($string, (string) $stream);
 
 		\fclose($handle);
 	}
@@ -431,5 +465,16 @@ class StreamTest extends TestCase
 		$stream = new Stream(\STDOUT);
 
 		$this->assertEquals('', $stream->toString());
+	}
+
+	public function testExceptions()
+	{
+		$this->assertInstanceOf(\RuntimeException::class, new Exception(''));
+		$this->assertInstanceOf(Exception::class, new InvalidArgumentException(''));
+		$this->assertInstanceOf(Exception::class, new UnopenableStreamException(''));
+		$this->assertInstanceOf(Exception::class, new UnreadableStreamException(''));
+		$this->assertInstanceOf(Exception::class, new UnseekableStreamException(''));
+		$this->assertInstanceOf(Exception::class, new UntellableStreamException(''));
+		$this->assertInstanceOf(Exception::class, new UnwritableStreamException(''));
 	}
 }

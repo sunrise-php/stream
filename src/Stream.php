@@ -14,6 +14,7 @@ namespace Sunrise\Stream;
 /**
  * Import classes
  */
+use Psr\Http\Message\StreamInterface;
 use Sunrise\Stream\Exception\InvalidArgumentException;
 use Sunrise\Stream\Exception\UnreadableStreamException;
 use Sunrise\Stream\Exception\UnseekableStreamException;
@@ -34,7 +35,11 @@ class Stream implements StreamInterface
 	protected $resource;
 
 	/**
-	 * {@inheritDoc}
+	 * Constructor of the class
+	 *
+	 * @param resource $resource
+	 *
+	 * @throws Exception\InvalidArgumentException
 	 */
 	public function __construct($resource)
 	{
@@ -47,7 +52,9 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Checks if the stream is resourceable
+	 *
+	 * @return bool
 	 */
 	public function isResourceable() : bool
 	{
@@ -55,7 +62,11 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Detaches a resource from the stream
+	 *
+	 * Returns NULL if the stream already without a resource.
+	 *
+	 * @return null|resource
 	 */
 	public function detach()
 	{
@@ -67,7 +78,11 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Closes the stream
+	 *
+	 * @return void
+	 *
+	 * @link http://php.net/manual/en/function.fclose.php
 	 */
 	public function close() : void
 	{
@@ -82,7 +97,11 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Checks if the end of the stream is reached
+	 *
+	 * @return bool
+	 *
+	 * @link http://php.net/manual/en/function.feof.php
 	 */
 	public function eof() : bool
 	{
@@ -95,7 +114,13 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Gets the stream pointer position
+	 *
+	 * @return int
+	 *
+	 * @throws Exception\UntellableStreamException
+	 *
+	 * @link http://php.net/manual/en/function.ftell.php
 	 */
 	public function tell() : int
 	{
@@ -115,7 +140,9 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Checks if the stream is seekable
+	 *
+	 * @return bool
 	 */
 	public function isSeekable() : bool
 	{
@@ -130,7 +157,13 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Moves the stream pointer to begining
+	 *
+	 * @return void
+	 *
+	 * @throws Exception\UnseekableStreamException
+	 *
+	 * @link http://php.net/manual/en/function.rewind.php
 	 */
 	public function rewind() : void
 	{
@@ -153,9 +186,18 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Moves the stream pointer to the given position
+	 *
+	 * @param int $offset
+	 * @param int $whence
+	 *
+	 * @return void
+	 *
+	 * @throws Exception\UnseekableStreamException
+	 *
+	 * @link http://php.net/manual/en/function.fseek.php
 	 */
-	public function seek(int $offset, int $whence = \SEEK_SET) : void
+	public function seek($offset, $whence = \SEEK_SET) : void
 	{
 		if (! $this->isResourceable())
 		{
@@ -176,7 +218,9 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Checks if the stream is writable
+	 *
+	 * @return bool
 	 */
 	public function isWritable() : bool
 	{
@@ -191,9 +235,19 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Writes the given string to the stream
+	 *
+	 * Returns the number of bytes written to the stream.
+	 *
+	 * @param string $string
+	 *
+	 * @return int
+	 *
+	 * @throws Exception\UnwritableStreamException
+	 *
+	 * @link http://php.net/manual/en/function.fwrite.php
 	 */
-	public function write(string $string) : int
+	public function write($string) : int
 	{
 		if (! $this->isResourceable())
 		{
@@ -216,7 +270,15 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Truncates the stream to the given length
+	 *
+	 * @param int $length
+	 *
+	 * @return void
+	 *
+	 * @throws Exception\UnwritableStreamException
+	 *
+	 * @link http://php.net/manual/en/function.ftruncate.php
 	 */
 	public function truncate(int $length = 0) : void
 	{
@@ -239,7 +301,9 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Checks if the stream is readable
+	 *
+	 * @return bool
 	 */
 	public function isReadable() : bool
 	{
@@ -254,9 +318,17 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Reads the given number of bytes from the stream
+	 *
+	 * @param int $length
+	 *
+	 * @return string
+	 *
+	 * @throws Exception\UnreadableStreamException
+	 *
+	 * @link http://php.net/manual/en/function.fread.php
 	 */
-	public function read(int $length) : string
+	public function read($length) : string
 	{
 		if (! $this->isResourceable())
 		{
@@ -279,7 +351,13 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Reads remainder of the stream
+	 *
+	 * @return string
+	 *
+	 * @throws Exception\UnreadableStreamException
+	 *
+	 * @link http://php.net/manual/en/function.stream-get-contents.php
 	 */
 	public function getContents() : string
 	{
@@ -304,20 +382,39 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Gets the stream metadata
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 *
+	 * @link http://php.net/manual/en/function.stream-get-meta-data.php
 	 */
-	public function getMetadata() : ?array
+	public function getMetadata($key = null)
 	{
 		if (! $this->isResourceable())
 		{
 			return null;
 		}
 
-		return \stream_get_meta_data($this->resource);
+		$metadata = \stream_get_meta_data($this->resource);
+
+		if (! (null === $key))
+		{
+			return $metadata[$key] ?? null;
+		}
+
+		return $metadata;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Gets the stream size
+	 *
+	 * Returns NULL if the stream without a resource, or if the stream size cannot be determined.
+	 *
+	 * @return null|int
+	 *
+	 * @link http://php.net/manual/en/function.fstat.php
 	 */
 	public function getSize() : ?int
 	{
@@ -337,7 +434,11 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Converts the stream to string
+	 *
+	 * This method SHOULD NOT throw an exception.
+	 *
+	 * @return string
 	 */
 	public function toString() : string
 	{
@@ -359,5 +460,15 @@ class Stream implements StreamInterface
 		}
 
 		return '';
+	}
+
+	/**
+	 * Converts the object to string
+	 *
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return $this->toString();
 	}
 }

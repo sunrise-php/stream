@@ -15,11 +15,6 @@ namespace Sunrise\Stream;
  * Import classes
  */
 use Psr\Http\Message\StreamInterface;
-use Sunrise\Stream\Exception\InvalidArgumentException;
-use Sunrise\Stream\Exception\UnreadableStreamException;
-use Sunrise\Stream\Exception\UnseekableStreamException;
-use Sunrise\Stream\Exception\UntellableStreamException;
-use Sunrise\Stream\Exception\UnwritableStreamException;
 
 /**
  * Stream
@@ -45,7 +40,7 @@ class Stream implements StreamInterface
 	{
 		if (! \is_resource($resource))
 		{
-			throw new InvalidArgumentException('Invalid stream resource');
+			throw new Exception\InvalidArgumentException('Invalid stream resource');
 		}
 
 		$this->resource = $resource;
@@ -126,14 +121,14 @@ class Stream implements StreamInterface
 	{
 		if (! $this->isResourceable())
 		{
-			throw new UntellableStreamException('Stream is not resourceable');
+			throw new Exception\UntellableStreamException('Stream is not resourceable');
 		}
 
 		$result = \ftell($this->resource);
 
 		if (false === $result)
 		{
-			throw new UntellableStreamException('Unable to get the stream pointer position');
+			throw new Exception\UntellableStreamException('Unable to get the stream pointer position');
 		}
 
 		return $result;
@@ -169,19 +164,19 @@ class Stream implements StreamInterface
 	{
 		if (! $this->isResourceable())
 		{
-			throw new UnseekableStreamException('Stream is not resourceable');
+			throw new Exception\UnseekableStreamException('Stream is not resourceable');
 		}
 
 		if (! $this->isSeekable())
 		{
-			throw new UnseekableStreamException('Stream is not seekable');
+			throw new Exception\UnseekableStreamException('Stream is not seekable');
 		}
 
 		$result = \fseek($this->resource, 0, \SEEK_SET);
 
 		if (! (0 === $result))
 		{
-			throw new UnseekableStreamException('Unable to move the stream pointer to beginning');
+			throw new Exception\UnseekableStreamException('Unable to move the stream pointer to beginning');
 		}
 	}
 
@@ -201,19 +196,19 @@ class Stream implements StreamInterface
 	{
 		if (! $this->isResourceable())
 		{
-			throw new UnseekableStreamException('Stream is not resourceable');
+			throw new Exception\UnseekableStreamException('Stream is not resourceable');
 		}
 
 		if (! $this->isSeekable())
 		{
-			throw new UnseekableStreamException('Stream is not seekable');
+			throw new Exception\UnseekableStreamException('Stream is not seekable');
 		}
 
 		$result = \fseek($this->resource, $offset, $whence);
 
 		if (! (0 === $result))
 		{
-			throw new UnseekableStreamException('Unable to move the stream pointer to the given position');
+			throw new Exception\UnseekableStreamException('Unable to move the stream pointer to the given position');
 		}
 	}
 
@@ -251,19 +246,19 @@ class Stream implements StreamInterface
 	{
 		if (! $this->isResourceable())
 		{
-			throw new UnwritableStreamException('Stream is not resourceable');
+			throw new Exception\UnwritableStreamException('Stream is not resourceable');
 		}
 
 		if (! $this->isWritable())
 		{
-			throw new UnwritableStreamException('Stream is not writable');
+			throw new Exception\UnwritableStreamException('Stream is not writable');
 		}
 
 		$result = \fwrite($this->resource, $string);
 
 		if (false === $result)
 		{
-			throw new UnwritableStreamException('Unable to write to the stream');
+			throw new Exception\UnwritableStreamException('Unable to write to the stream');
 		}
 
 		return $result;
@@ -284,19 +279,19 @@ class Stream implements StreamInterface
 	{
 		if (! $this->isResourceable())
 		{
-			throw new UnwritableStreamException('Stream is not resourceable');
+			throw new Exception\UnwritableStreamException('Stream is not resourceable');
 		}
 
 		if (! $this->isWritable())
 		{
-			throw new UnwritableStreamException('Stream is not writable');
+			throw new Exception\UnwritableStreamException('Stream is not writable');
 		}
 
 		$result = \ftruncate($this->resource, $length);
 
 		if (false === $result)
 		{
-			throw new UnwritableStreamException('Unable to truncate the stream');
+			throw new Exception\UnwritableStreamException('Unable to truncate the stream');
 		}
 	}
 
@@ -332,19 +327,19 @@ class Stream implements StreamInterface
 	{
 		if (! $this->isResourceable())
 		{
-			throw new UnreadableStreamException('Stream is not resourceable');
+			throw new Exception\UnreadableStreamException('Stream is not resourceable');
 		}
 
 		if (! $this->isReadable())
 		{
-			throw new UnreadableStreamException('Stream is not readable');
+			throw new Exception\UnreadableStreamException('Stream is not readable');
 		}
 
 		$result = \fread($this->resource, $length);
 
 		if (false === $result)
 		{
-			throw new UnreadableStreamException('Unable to read from the stream');
+			throw new Exception\UnreadableStreamException('Unable to read from the stream');
 		}
 
 		return $result;
@@ -363,19 +358,19 @@ class Stream implements StreamInterface
 	{
 		if (! $this->isResourceable())
 		{
-			throw new UnreadableStreamException('Stream is not resourceable');
+			throw new Exception\UnreadableStreamException('Stream is not resourceable');
 		}
 
 		if (! $this->isReadable())
 		{
-			throw new UnreadableStreamException('Stream is not readable');
+			throw new Exception\UnreadableStreamException('Stream is not readable');
 		}
 
 		$result = \stream_get_contents($this->resource);
 
 		if (false === $result)
 		{
-			throw new UnreadableStreamException('Unable to read remainder of the stream');
+			throw new Exception\UnreadableStreamException('Unable to read remainder of the stream');
 		}
 
 		return $result;

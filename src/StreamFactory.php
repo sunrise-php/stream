@@ -45,11 +45,10 @@ class StreamFactory implements StreamFactoryInterface
 	 */
 	public function createStreamFromFile(string $filename, string $mode = 'r') : StreamInterface
 	{
-		\set_error_handler(function() {}, E_WARNING);
-
-		$resource = \fopen($filename, $mode);
-
-		\restore_error_handler();
+		// If the open fails, an error of level E_WARNING is generated.
+		// You may use @ to suppress this warning.
+		// http://php.net/manual/en/function.fopen.php
+		$resource = @ \fopen($filename, $mode);
 
 		if (false === $resource)
 		{

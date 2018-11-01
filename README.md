@@ -28,6 +28,9 @@ $stream = new Stream(fopen(...));
 // creates a new stream from the given string
 $stream = (new StreamFactory)->createStream('Hello, world!');
 
+// creates a new stream from the request body
+$stream = (new StreamFactory)->createStreamFromRequestBody();
+
 // creates a new stream from the given filename or URI
 $stream = (new StreamFactory)->createStreamFromFile('http://php.net/', 'rb');
 

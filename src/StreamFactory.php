@@ -26,13 +26,32 @@ class StreamFactory implements StreamFactoryInterface
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @link http://php.net/manual/en/wrappers.php.php
+	 * @link http://php.net/manual/en/wrappers.php.php#wrappers.php.memory
 	 */
 	public function createStream(string $content = '') : StreamInterface
 	{
 		$resource = \fopen('php://temp', 'r+b');
 
 		\fwrite($resource, $content);
+		\rewind($resource);
+
+		return new Stream($resource);
+	}
+
+	/**
+	 * Creates a stream from the request body
+	 *
+	 * @return StreamInterface
+	 *
+	 * @link http://php.net/manual/en/wrappers.php.php#wrappers.php.memory
+	 * @link http://php.net/manual/en/wrappers.php.php#wrappers.php.input
+	 */
+	public function createStreamFromRequestBody() : StreamInterface
+	{
+		$resource = \fopen('php://temp', 'r+b');
+
+		\stream_copy_to_stream(\fopen('php://input', 'rb'), $resource);
+
 		\rewind($resource);
 
 		return new Stream($resource);

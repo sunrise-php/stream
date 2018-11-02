@@ -19,14 +19,14 @@ use Psr\Http\Message\StreamInterface;
 
 /**
  * StreamFactory
+ *
+ * @link https://www.php-fig.org/psr/psr-17/
  */
 class StreamFactory implements StreamFactoryInterface
 {
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @link http://php.net/manual/en/wrappers.php.php#wrappers.php.memory
 	 */
 	public function createStream(string $content = '') : StreamInterface
 	{
@@ -42,9 +42,6 @@ class StreamFactory implements StreamFactoryInterface
 	 * Creates a stream from the request body
 	 *
 	 * @return StreamInterface
-	 *
-	 * @link http://php.net/manual/en/wrappers.php.php#wrappers.php.memory
-	 * @link http://php.net/manual/en/wrappers.php.php#wrappers.php.input
 	 */
 	public function createStreamFromRequestBody() : StreamInterface
 	{
@@ -64,9 +61,7 @@ class StreamFactory implements StreamFactoryInterface
 	 */
 	public function createStreamFromFile(string $filename, string $mode = 'r') : StreamInterface
 	{
-		// If the open fails, an error of level E_WARNING is generated.
-		// You may use @ to suppress this warning.
-		// http://php.net/manual/en/function.fopen.php
+		// See http://php.net/manual/en/function.fopen.php
 		$resource = @ \fopen($filename, $mode);
 
 		if (false === $resource)

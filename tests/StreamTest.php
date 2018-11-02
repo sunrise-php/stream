@@ -286,20 +286,6 @@ class StreamTest extends TestCase
 		$stream = new Stream($handle);
 
 		\fwrite($handle, $string);
-		$this->assertEquals($string, $stream->toString());
-
-		\fclose($handle);
-	}
-
-	public function testMagicToString()
-	{
-		$string = 'Hello, world!';
-		$length = \strlen($string);
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		\fwrite($handle, $string);
 		$this->assertEquals($string, (string) $stream);
 
 		\fclose($handle);
@@ -457,14 +443,14 @@ class StreamTest extends TestCase
 		$stream = new Stream($handle);
 
 		$stream->close();
-		$this->assertEquals('', $stream->toString());
+		$this->assertEquals('', (string) $stream);
 	}
 
 	public function testToStringUnreadable()
 	{
 		$stream = new Stream(\STDOUT);
 
-		$this->assertEquals('', $stream->toString());
+		$this->assertEquals('', (string) $stream);
 	}
 
 	public function testExceptions()

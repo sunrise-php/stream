@@ -18,6 +18,8 @@ use Psr\Http\Message\StreamInterface;
 
 /**
  * Stream
+ *
+ * @link https://www.php-fig.org/psr/psr-7/
  */
 class Stream implements StreamInterface
 {
@@ -431,11 +433,11 @@ class Stream implements StreamInterface
 	/**
 	 * Converts the stream to string
 	 *
-	 * This method SHOULD NOT throw an exception.
-	 *
 	 * @return string
+	 *
+	 * @link http://php.net/manual/en/language.oop5.magic.php#object.tostring
 	 */
-	public function toString() : string
+	public function __toString()
 	{
 		try
 		{
@@ -455,15 +457,5 @@ class Stream implements StreamInterface
 		}
 
 		return '';
-	}
-
-	/**
-	 * Converts the object to string
-	 *
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return $this->toString();
 	}
 }

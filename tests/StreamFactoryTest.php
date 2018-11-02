@@ -33,7 +33,7 @@ class StreamFactoryTest extends TestCase
 
 		$this->assertEquals(0, $stream->tell());
 
-		$this->assertEquals($content, $stream->toString());
+		$this->assertEquals($content, (string) $stream);
 
 		$stream->close();
 	}

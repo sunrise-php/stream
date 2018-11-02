@@ -37,7 +37,7 @@ $stream = (new StreamFactory)->createStreamFromFile('http://php.net/', 'rb');
 // creates a new stream from the given resource
 $stream = (new StreamFactory)->createStreamFromResource(fopen(...));
 
-// converts the stream to string without a magic
+// converts the stream to string
 (string) $stream;
 
 // closes the stream

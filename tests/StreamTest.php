@@ -21,19 +21,7 @@ class StreamTest extends TestCase
 		$stream = new Stream($handle);
 
 		$this->assertInstanceOf(StreamInterface::class, $stream);
-
-		\fclose($handle);
-	}
-
-	public function testIsResourceable()
-	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		$this->assertTrue($stream->isResourceable());
-
-		$stream->detach();
-		$this->assertFalse($stream->isResourceable());
+		$this->assertStreamResourceEquals($stream, $handle);
 
 		\fclose($handle);
 	}
@@ -44,8 +32,7 @@ class StreamTest extends TestCase
 		$stream = new Stream($handle);
 
 		$this->assertEquals($handle, $stream->detach());
-
-		$this->assertFalse($stream->isResourceable());
+		$this->assertStreamResourceEquals($stream, null);
 		$this->assertEquals(null, $stream->detach());
 
 		\fclose($handle);
@@ -57,6 +44,7 @@ class StreamTest extends TestCase
 		$stream = new Stream($handle);
 
 		$stream->close();
+		$this->assertStreamResourceEquals($stream, null);
 		$this->assertFalse(\is_resource($handle));
 
 		if (\is_resource($handle)) {
@@ -166,26 +154,6 @@ class StreamTest extends TestCase
 
 		\rewind($handle);
 		$this->assertEquals($string, \fread($handle, $length));
-
-		\fclose($handle);
-	}
-
-	public function testTruncate()
-	{
-		$string = 'Hello, world!';
-		$length = \strlen($string);
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		\fwrite($handle, $string);
-		$stream->truncate(4);
-		\rewind($handle);
-		$this->assertEquals(\substr($string, 0, 4), \fread($handle, $length));
-
-		$stream->truncate(0);
-		\rewind($handle);
-		$this->assertEquals('', \fread($handle, $length));
 
 		\fclose($handle);
 	}
@@ -347,18 +315,6 @@ class StreamTest extends TestCase
 		$stream->write('0', 1);
 	}
 
-	public function testTruncateUnresourceable()
-	{
-		$this->expectException(UnwritableStreamException::class);
-		$this->expectExceptionMessage('Stream is not resourceable');
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		$stream->close();
-		$stream->truncate(0);
-	}
-
 	public function testReadUnresourceable()
 	{
 		$this->expectException(UnreadableStreamException::class);
@@ -390,15 +346,6 @@ class StreamTest extends TestCase
 
 		$stream = new Stream(\STDIN);
 		$stream->write('0', 1);
-	}
-
-	public function testTruncateUnwritable()
-	{
-		$this->expectException(UnwritableStreamException::class);
-		$this->expectExceptionMessage('Stream is not writable');
-
-		$stream = new Stream(\STDIN);
-		$stream->truncate(0);
 	}
 
 	public function testReadUnreadable()
@@ -462,5 +409,14 @@ class StreamTest extends TestCase
 		$this->assertInstanceOf(Exception::class, new UnseekableStreamException(''));
 		$this->assertInstanceOf(Exception::class, new UntellableStreamException(''));
 		$this->assertInstanceOf(Exception::class, new UnwritableStreamException(''));
+	}
+
+	private function assertStreamResourceEquals(StreamInterface $stream, $expected)
+	{
+		$property = new \ReflectionProperty($stream, 'resource');
+
+		$property->setAccessible(true);
+
+		return $this->assertEquals($property->getValue($stream), $expected);
 	}
 }

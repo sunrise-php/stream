@@ -49,16 +49,6 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * Checks if the stream is resourceable
-	 *
-	 * @return bool
-	 */
-	public function isResourceable() : bool
-	{
-		return \is_resource($this->resource);
-	}
-
-	/**
 	 * Detaches a resource from the stream
 	 *
 	 * Returns NULL if the stream already without a resource.
@@ -83,7 +73,7 @@ class Stream implements StreamInterface
 	 */
 	public function close() : void
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			return;
 		}
@@ -102,7 +92,7 @@ class Stream implements StreamInterface
 	 */
 	public function eof() : bool
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			return true;
 		}
@@ -121,7 +111,7 @@ class Stream implements StreamInterface
 	 */
 	public function tell() : int
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			throw new Exception\UntellableStreamException('Stream is not resourceable');
 		}
@@ -143,7 +133,7 @@ class Stream implements StreamInterface
 	 */
 	public function isSeekable() : bool
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			return false;
 		}
@@ -164,7 +154,7 @@ class Stream implements StreamInterface
 	 */
 	public function rewind() : void
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			throw new Exception\UnseekableStreamException('Stream is not resourceable');
 		}
@@ -196,7 +186,7 @@ class Stream implements StreamInterface
 	 */
 	public function seek($offset, $whence = \SEEK_SET) : void
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			throw new Exception\UnseekableStreamException('Stream is not resourceable');
 		}
@@ -221,7 +211,7 @@ class Stream implements StreamInterface
 	 */
 	public function isWritable() : bool
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			return false;
 		}
@@ -246,7 +236,7 @@ class Stream implements StreamInterface
 	 */
 	public function write($string) : int
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			throw new Exception\UnwritableStreamException('Stream is not resourceable');
 		}
@@ -267,44 +257,13 @@ class Stream implements StreamInterface
 	}
 
 	/**
-	 * Truncates the stream to the given length
-	 *
-	 * @param int $length
-	 *
-	 * @return void
-	 *
-	 * @throws Exception\UnwritableStreamException
-	 *
-	 * @link http://php.net/manual/en/function.ftruncate.php
-	 */
-	public function truncate(int $length = 0) : void
-	{
-		if (! $this->isResourceable())
-		{
-			throw new Exception\UnwritableStreamException('Stream is not resourceable');
-		}
-
-		if (! $this->isWritable())
-		{
-			throw new Exception\UnwritableStreamException('Stream is not writable');
-		}
-
-		$result = \ftruncate($this->resource, $length);
-
-		if (false === $result)
-		{
-			throw new Exception\UnwritableStreamException('Unable to truncate the stream');
-		}
-	}
-
-	/**
 	 * Checks if the stream is readable
 	 *
 	 * @return bool
 	 */
 	public function isReadable() : bool
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			return false;
 		}
@@ -327,7 +286,7 @@ class Stream implements StreamInterface
 	 */
 	public function read($length) : string
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			throw new Exception\UnreadableStreamException('Stream is not resourceable');
 		}
@@ -358,7 +317,7 @@ class Stream implements StreamInterface
 	 */
 	public function getContents() : string
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			throw new Exception\UnreadableStreamException('Stream is not resourceable');
 		}
@@ -389,7 +348,7 @@ class Stream implements StreamInterface
 	 */
 	public function getMetadata($key = null)
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			return null;
 		}
@@ -415,7 +374,7 @@ class Stream implements StreamInterface
 	 */
 	public function getSize() : ?int
 	{
-		if (! $this->isResourceable())
+		if (! \is_resource($this->resource))
 		{
 			return null;
 		}

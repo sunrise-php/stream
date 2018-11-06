@@ -39,22 +39,6 @@ class StreamFactory implements StreamFactoryInterface
 	}
 
 	/**
-	 * Creates a stream from the request body
-	 *
-	 * @return StreamInterface
-	 */
-	public function createStreamFromRequestBody() : StreamInterface
-	{
-		$resource = \fopen('php://temp', 'r+b');
-
-		\stream_copy_to_stream(\fopen('php://input', 'rb'), $resource);
-
-		\rewind($resource);
-
-		return new Stream($resource);
-	}
-
-	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws Exception\UnopenableStreamException If the given file does not open

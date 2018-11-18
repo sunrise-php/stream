@@ -4,8 +4,6 @@ namespace Sunrise\Stream\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
-use Sunrise\Stream\Exception\Exception;
-use Sunrise\Stream\Exception\InvalidArgumentException;
 use Sunrise\Stream\Exception\UnopenableStreamException;
 use Sunrise\Stream\Exception\UnreadableStreamException;
 use Sunrise\Stream\Exception\UnseekableStreamException;
@@ -261,7 +259,7 @@ class StreamTest extends TestCase
 
 	public function testConstructorWithInvalidResource()
 	{
-		$this->expectException(InvalidArgumentException::class);
+		$this->expectException(\InvalidArgumentException::class);
 		$this->expectExceptionMessage('Invalid stream resource');
 
 		new Stream('');
@@ -402,13 +400,11 @@ class StreamTest extends TestCase
 
 	public function testExceptions()
 	{
-		$this->assertInstanceOf(\RuntimeException::class, new Exception(''));
-		$this->assertInstanceOf(Exception::class, new InvalidArgumentException(''));
-		$this->assertInstanceOf(Exception::class, new UnopenableStreamException(''));
-		$this->assertInstanceOf(Exception::class, new UnreadableStreamException(''));
-		$this->assertInstanceOf(Exception::class, new UnseekableStreamException(''));
-		$this->assertInstanceOf(Exception::class, new UntellableStreamException(''));
-		$this->assertInstanceOf(Exception::class, new UnwritableStreamException(''));
+		$this->assertInstanceOf(\RuntimeException::class, new UnopenableStreamException(''));
+		$this->assertInstanceOf(\RuntimeException::class, new UnreadableStreamException(''));
+		$this->assertInstanceOf(\RuntimeException::class, new UnseekableStreamException(''));
+		$this->assertInstanceOf(\RuntimeException::class, new UntellableStreamException(''));
+		$this->assertInstanceOf(\RuntimeException::class, new UnwritableStreamException(''));
 	}
 
 	private function assertStreamResourceEquals(StreamInterface $stream, $expected)

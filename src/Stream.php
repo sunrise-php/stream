@@ -36,13 +36,13 @@ class Stream implements StreamInterface
 	 *
 	 * @param resource $resource
 	 *
-	 * @throws Exception\InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function __construct($resource)
 	{
 		if (! \is_resource($resource))
 		{
-			throw new Exception\InvalidArgumentException('Invalid stream resource');
+			throw new \InvalidArgumentException('Invalid stream resource');
 		}
 
 		$this->resource = $resource;

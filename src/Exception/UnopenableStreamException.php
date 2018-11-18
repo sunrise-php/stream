@@ -12,7 +12,12 @@
 namespace Sunrise\Stream\Exception;
 
 /**
+ * Import classes
+ */
+use RuntimeException;
+
+/**
  * UnopenableStreamException
  */
-class UnopenableStreamException extends Exception
+class UnopenableStreamException extends RuntimeException
 {}

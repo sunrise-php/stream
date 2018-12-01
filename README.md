@@ -2,6 +2,8 @@
 
 [![Build Status](https://api.travis-ci.com/sunrise-php/stream.svg?branch=master)](https://travis-ci.com/sunrise-php/stream)
 [![CodeFactor](https://www.codefactor.io/repository/github/sunrise-php/stream/badge)](https://www.codefactor.io/repository/github/sunrise-php/stream)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sunrise-php/stream/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/stream/?branch=master)
+[![Code Intelligence Status](https://scrutinizer-ci.com/g/sunrise-php/stream/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 [![Latest Stable Version](https://poser.pugx.org/sunrise/stream/v/stable)](https://packagist.org/packages/sunrise/stream)
 [![Total Downloads](https://poser.pugx.org/sunrise/stream/downloads)](https://packagist.org/packages/sunrise/stream)
 [![License](https://poser.pugx.org/sunrise/stream/license)](https://packagist.org/packages/sunrise/stream)

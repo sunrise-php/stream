@@ -5,4 +5,8 @@
 			<directory>./tests/</directory>
 		</testsuite>
 	</testsuites>
+
+	<php>
+		<const name="STREAM_FACTORY" value="Sunrise\Stream\StreamFactory"/>
+	</php>
 </phpunit>

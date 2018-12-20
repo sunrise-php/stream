@@ -13,58 +13,66 @@ use Sunrise\Stream\Stream;
 
 class StreamTest extends TestCase
 {
+	private $handle;
+
+	public function setUp()
+	{
+		$this->handle = \fopen('php://memory', 'r+b');
+	}
+
+	public function tearDown()
+	{
+		if (\is_resource($this->handle))
+		{
+			\fclose($this->handle);
+		}
+	}
+
 	public function testConstructor()
 	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
 		$this->assertInstanceOf(StreamInterface::class, $stream);
-		$this->assertStreamResourceEquals($stream, $handle);
+		$this->assertStreamResourceEquals($stream, $this->handle);
+	}
 
-		\fclose($handle);
+	public function testConstructorWithInvalidResource()
+	{
+		$this->expectException(\InvalidArgumentException::class);
+		$this->expectExceptionMessage('Invalid stream resource');
+
+		new Stream('');
 	}
 
 	public function testDetach()
 	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
-		$this->assertEquals($handle, $stream->detach());
+		$this->assertEquals($this->handle, $stream->detach());
 		$this->assertStreamResourceEquals($stream, null);
 		$this->assertEquals(null, $stream->detach());
-
-		\fclose($handle);
 	}
 
 	public function testClose()
 	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
 		$stream->close();
 		$this->assertStreamResourceEquals($stream, null);
-		$this->assertFalse(\is_resource($handle));
-
-		if (\is_resource($handle)) {
-			\fclose($handle);
-		}
+		$this->assertFalse(\is_resource($this->handle));
 	}
 
 	public function testEof()
 	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
-		while (! \feof($handle)) {
-			\fread($handle, 1024);
+		while (! \feof($this->handle)) {
+			\fread($this->handle, 1024);
 		}
 
 		$this->assertTrue($stream->eof());
-
-		\rewind($handle);
+		\rewind($this->handle);
 		$this->assertFalse($stream->eof());
-
-		\fclose($handle);
 	}
 
 	public function testTell()
@@ -72,32 +80,37 @@ class StreamTest extends TestCase
 		$string = 'Hello, world!';
 		$length = \strlen($string);
 
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
-		\rewind($handle);
+		\rewind($this->handle);
 		$this->assertEquals(0, $stream->tell());
 
-		\fwrite($handle, $string, $length);
+		\fwrite($this->handle, $string, $length);
 		$this->assertEquals($length, $stream->tell());
 
-		\rewind($handle);
+		\rewind($this->handle);
 		$this->assertEquals(0, $stream->tell());
+	}
 
-		\fclose($handle);
+	public function testTellUnresourceable()
+	{
+		$this->expectException(UntellableStreamException::class);
+		$this->expectExceptionMessage('Stream is not resourceable');
+
+		$stream = new Stream($this->handle);
+
+		$stream->close();
+		$stream->tell();
 	}
 
 	public function testIsSeekable()
 	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
 		$this->assertTrue($stream->isSeekable());
 
 		$stream->detach();
 		$this->assertFalse($stream->isSeekable());
-
-		\fclose($handle);
 	}
 
 	public function testRewind()
@@ -105,14 +118,22 @@ class StreamTest extends TestCase
 		$string = 'Hello, world!';
 		$length = \strlen($string);
 
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
-		\fwrite($handle, $string, $length);
+		\fwrite($this->handle, $string, $length);
 		$stream->rewind();
-		$this->assertEquals(0, \ftell($handle));
+		$this->assertEquals(0, \ftell($this->handle));
+	}
 
-		\fclose($handle);
+	public function testRewindUnresourceable()
+	{
+		$this->expectException(UnseekableStreamException::class);
+		$this->expectExceptionMessage('Stream is not resourceable');
+
+		$stream = new Stream($this->handle);
+
+		$stream->close();
+		$stream->rewind();
 	}
 
 	public function testSeek()
@@ -120,15 +141,23 @@ class StreamTest extends TestCase
 		$string = 'Hello, world!';
 		$length = \strlen($string);
 
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
-		\fwrite($handle, $string, $length);
-		\rewind($handle);
+		\fwrite($this->handle, $string, $length);
+		\rewind($this->handle);
 		$stream->seek($length, \SEEK_SET);
-		$this->assertEquals($length, \ftell($handle));
+		$this->assertEquals($length, \ftell($this->handle));
+	}
 
-		\fclose($handle);
+	public function testSeekUnresourceable()
+	{
+		$this->expectException(UnseekableStreamException::class);
+		$this->expectExceptionMessage('Stream is not resourceable');
+
+		$stream = new Stream($this->handle);
+
+		$stream->close();
+		$stream->seek(0, \SEEK_SET);
 	}
 
 	public function testIsWritable()
@@ -145,15 +174,32 @@ class StreamTest extends TestCase
 		$string = 'Hello, world!';
 		$length = \strlen($string);
 
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
 		$this->assertEquals($length, $stream->write($string));
 
-		\rewind($handle);
-		$this->assertEquals($string, \fread($handle, $length));
+		\rewind($this->handle);
+		$this->assertEquals($string, \fread($this->handle, $length));
+	}
 
-		\fclose($handle);
+	public function testWriteUnresourceable()
+	{
+		$this->expectException(UnwritableStreamException::class);
+		$this->expectExceptionMessage('Stream is not resourceable');
+
+		$stream = new Stream($this->handle);
+
+		$stream->close();
+		$stream->write('0', 1);
+	}
+
+	public function testWriteUnwritable()
+	{
+		$this->expectException(UnwritableStreamException::class);
+		$this->expectExceptionMessage('Stream is not writable');
+
+		$stream = new Stream(\STDIN);
+		$stream->write('0', 1);
 	}
 
 	public function testIsReadable()
@@ -170,147 +216,11 @@ class StreamTest extends TestCase
 		$string = 'Hello, world!';
 		$length = \strlen($string);
 
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
-		\fwrite($handle, $string);
-		\rewind($handle);
+		\fwrite($this->handle, $string);
+		\rewind($this->handle);
 		$this->assertEquals($string, $stream->read($length));
-
-		\fclose($handle);
-	}
-
-	public function testGetContents()
-	{
-		$string = 'Hello, world!';
-		$length = \strlen($string);
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		\fwrite($handle, $string);
-		\rewind($handle);
-		$this->assertEquals($string, $stream->getContents());
-
-		\fclose($handle);
-	}
-
-	public function testGetMetadata()
-	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		$this->assertEquals(
-			\stream_get_meta_data($handle),
-			$stream->getMetadata()
-		);
-
-		\fclose($handle);
-	}
-
-	public function testGetMetadataWithKey()
-	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		$this->assertEquals(
-			'php://memory',
-			$stream->getMetadata('uri')
-		);
-
-		$this->assertEquals(
-			null,
-			$stream->getMetadata('undefined')
-		);
-
-		\fclose($handle);
-	}
-
-	public function testGetSize()
-	{
-		$string = 'Hello, world!';
-		$length = \strlen($string);
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		\fwrite($handle, $string);
-		$this->assertEquals($length, $stream->getSize());
-
-		\ftruncate($handle, 0);
-		$this->assertEquals(0, $stream->getSize());
-
-		\fclose($handle);
-	}
-
-	public function testToString()
-	{
-		$string = 'Hello, world!';
-		$length = \strlen($string);
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		\fwrite($handle, $string);
-		$this->assertEquals($string, (string) $stream);
-
-		\fclose($handle);
-	}
-
-	public function testConstructorWithInvalidResource()
-	{
-		$this->expectException(\InvalidArgumentException::class);
-		$this->expectExceptionMessage('Invalid stream resource');
-
-		new Stream('');
-	}
-
-	public function testTellUnresourceable()
-	{
-		$this->expectException(UntellableStreamException::class);
-		$this->expectExceptionMessage('Stream is not resourceable');
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		$stream->close();
-		$stream->tell();
-	}
-
-	public function testRewindUnresourceable()
-	{
-		$this->expectException(UnseekableStreamException::class);
-		$this->expectExceptionMessage('Stream is not resourceable');
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		$stream->close();
-		$stream->rewind();
-	}
-
-	public function testSeekUnresourceable()
-	{
-		$this->expectException(UnseekableStreamException::class);
-		$this->expectExceptionMessage('Stream is not resourceable');
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		$stream->close();
-		$stream->seek(0, \SEEK_SET);
-	}
-
-	public function testWriteUnresourceable()
-	{
-		$this->expectException(UnwritableStreamException::class);
-		$this->expectExceptionMessage('Stream is not resourceable');
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		$stream->close();
-		$stream->write('0', 1);
 	}
 
 	public function testReadUnresourceable()
@@ -318,32 +228,10 @@ class StreamTest extends TestCase
 		$this->expectException(UnreadableStreamException::class);
 		$this->expectExceptionMessage('Stream is not resourceable');
 
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
 		$stream->close();
 		$stream->read(1);
-	}
-
-	public function testGetContentsUnresourceable()
-	{
-		$this->expectException(UnreadableStreamException::class);
-		$this->expectExceptionMessage('Stream is not resourceable');
-
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
-
-		$stream->close();
-		$stream->getContents();
-	}
-
-	public function testWriteUnwritable()
-	{
-		$this->expectException(UnwritableStreamException::class);
-		$this->expectExceptionMessage('Stream is not writable');
-
-		$stream = new Stream(\STDIN);
-		$stream->write('0', 1);
 	}
 
 	public function testReadUnreadable()
@@ -355,6 +243,29 @@ class StreamTest extends TestCase
 		$stream->read(1);
 	}
 
+	public function testGetContents()
+	{
+		$string = 'Hello, world!';
+		$length = \strlen($string);
+
+		$stream = new Stream($this->handle);
+
+		\fwrite($this->handle, $string);
+		\rewind($this->handle);
+		$this->assertEquals($string, $stream->getContents());
+	}
+
+	public function testGetContentsUnresourceable()
+	{
+		$this->expectException(UnreadableStreamException::class);
+		$this->expectExceptionMessage('Stream is not resourceable');
+
+		$stream = new Stream($this->handle);
+
+		$stream->close();
+		$stream->getContents();
+	}
+
 	public function testGetContentsUnreadable()
 	{
 		$this->expectException(UnreadableStreamException::class);
@@ -364,28 +275,75 @@ class StreamTest extends TestCase
 		$stream->getContents();
 	}
 
+	public function testGetMetadata()
+	{
+		$stream = new Stream($this->handle);
+
+		$this->assertEquals(
+			\stream_get_meta_data($this->handle),
+			$stream->getMetadata()
+		);
+	}
+
+	public function testGetMetadataWithKey()
+	{
+		$stream = new Stream($this->handle);
+
+		$this->assertEquals(
+			'php://memory',
+			$stream->getMetadata('uri')
+		);
+
+		$this->assertEquals(
+			null,
+			$stream->getMetadata('undefined')
+		);
+	}
+
 	public function testGetMetadataUnresourceable()
 	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
 		$stream->close();
 		$this->assertEquals(null, $stream->getMetadata());
 	}
 
+	public function testGetSize()
+	{
+		$string = 'Hello, world!';
+		$length = \strlen($string);
+
+		$stream = new Stream($this->handle);
+
+		\fwrite($this->handle, $string);
+		$this->assertEquals($length, $stream->getSize());
+
+		\ftruncate($this->handle, 0);
+		$this->assertEquals(0, $stream->getSize());
+	}
+
 	public function testGetSizeUnresourceable()
 	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
 		$stream->close();
 		$this->assertEquals(null, $stream->getSize());
 	}
 
+	public function testToString()
+	{
+		$string = 'Hello, world!';
+		$length = \strlen($string);
+
+		$stream = new Stream($this->handle);
+
+		\fwrite($this->handle, $string);
+		$this->assertEquals($string, (string) $stream);
+	}
+
 	public function testToStringUnresourceable()
 	{
-		$handle = \fopen('php://memory', 'r+b');
-		$stream = new Stream($handle);
+		$stream = new Stream($this->handle);
 
 		$stream->close();
 		$this->assertEquals('', (string) $stream);

@@ -1,29 +1,34 @@
 {
-	"name": "sunrise/stream",
-	"description": "Sunrise Stream",
-	"keywords": ["fenric", "sunrise", "stream", "psr-7", "psr-17"],
-	"homepage": "https://github.com/sunrise-php/stream",
-	"license": "MIT",
-	"authors": [{
-		"name": "Anatoly Fenric",
-		"email": "anatoly@fenric.ru",
-		"homepage": "https://anatoly.fenric.ru/"
-	}],
-	"require": {
-		"php": "^7.1",
-		"psr/http-factory": "^1.0",
-		"psr/http-message": "^1.0"
-	},
-	"require-dev": {
-		"phpunit/phpunit": "7.5.1",
-		"php-http/psr7-integration-tests": "dev-master"
-	},
-	"provide": {
-		"psr/http-message-implementation": "1.0"
-	},
-	"autoload": {
-		"psr-4": {
-			"Sunrise\\Stream\\": "src/"
-		}
-	}
+    "name": "sunrise/stream",
+    "description": "Sunrise Stream",
+    "keywords": ["fenric", "sunrise", "stream", "psr-7", "psr-17"],
+    "homepage": "https://github.com/sunrise-php/stream",
+    "license": "MIT",
+    "authors": [{
+        "name": "Anatoly Fenric",
+        "email": "anatoly@fenric.ru",
+        "homepage": "https://anatoly.fenric.ru/"
+    }],
+    "require": {
+        "php": "^7.1",
+        "psr/http-factory": "^1.0",
+        "psr/http-message": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "7.5.1",
+        "php-http/psr7-integration-tests": "dev-master"
+    },
+    "provide": {
+        "psr/http-message-implementation": "1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sunrise\\Stream\\": "src/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "phpunit --colors=always --coverage-text"
+        ]
+    }
 }

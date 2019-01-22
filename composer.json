@@ -1,6 +1,6 @@
 {
     "name": "sunrise/stream",
-    "description": "Sunrise Stream",
+    "description": "Simple Stream wrapper for PHP 7.1+ based on PSR-7 & PSR-17",
     "keywords": ["fenric", "sunrise", "stream", "psr-7", "psr-17"],
     "homepage": "https://github.com/sunrise-php/stream",
     "license": "MIT",

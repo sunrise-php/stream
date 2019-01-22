@@ -1,4 +1,4 @@
-# Stream wrapper for PHP 7.1+ based on PSR-7 & PSR-17
+## Simple Stream wrapper for PHP 7.1+ based on PSR-7 & PSR-17
 
 [![Gitter](https://badges.gitter.im/sunrise-php/support.png)](https://gitter.im/sunrise-php/support)
 [![Build Status](https://api.travis-ci.com/sunrise-php/stream.svg?branch=master)](https://travis-ci.com/sunrise-php/stream)
@@ -56,5 +56,5 @@ https://phpdoc.fenric.ru/
 
 ## Useful links
 
-https://www.php-fig.org/psr/psr-7/<br>
-https://www.php-fig.org/psr/psr-17/
+* https://www.php-fig.org/psr/psr-7/
+* https://www.php-fig.org/psr/psr-17/

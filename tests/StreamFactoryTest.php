@@ -61,6 +61,7 @@ class StreamFactoryTest extends TestCase
 	public function testCreateStreamFromUnopenableFile()
 	{
 		$this->expectException(UnopenableStreamException::class);
+		$this->expectExceptionMessage(\sprintf('Unable to open file "%s/nonexistent.file" in mode "r"', __DIR__));
 
 		(new StreamFactory)->createStreamFromFile(__DIR__ . '/nonexistent.file', 'r');
 	}

@@ -15,12 +15,12 @@ class StreamTest extends TestCase
 {
 	private $handle;
 
-	public function setUp()
+	protected function setUp()
 	{
 		$this->handle = \fopen('php://memory', 'r+b');
 	}
 
-	public function tearDown()
+	protected function tearDown()
 	{
 		if (\is_resource($this->handle))
 		{
@@ -50,7 +50,7 @@ class StreamTest extends TestCase
 
 		$this->assertEquals($this->handle, $stream->detach());
 		$this->assertStreamResourceEquals($stream, null);
-		$this->assertEquals(null, $stream->detach());
+		$this->assertNull($stream->detach());
 	}
 
 	public function testClose()
@@ -305,7 +305,7 @@ class StreamTest extends TestCase
 		$stream = new Stream($this->handle);
 
 		$stream->close();
-		$this->assertEquals(null, $stream->getMetadata());
+		$this->assertNull($stream->getMetadata());
 	}
 
 	public function testGetSize()
@@ -327,7 +327,7 @@ class StreamTest extends TestCase
 		$stream = new Stream($this->handle);
 
 		$stream->close();
-		$this->assertEquals(null, $stream->getSize());
+		$this->assertNull($stream->getSize());
 	}
 
 	public function testToString()

@@ -40,8 +40,7 @@ class Stream implements StreamInterface
 	 */
 	public function __construct($resource)
 	{
-		if (! \is_resource($resource))
-		{
+		if (! \is_resource($resource)) {
 			throw new \InvalidArgumentException('Invalid stream resource');
 		}
 
@@ -73,8 +72,7 @@ class Stream implements StreamInterface
 	 */
 	public function close() : void
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			return;
 		}
 
@@ -92,8 +90,7 @@ class Stream implements StreamInterface
 	 */
 	public function eof() : bool
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			return true;
 		}
 
@@ -111,15 +108,13 @@ class Stream implements StreamInterface
 	 */
 	public function tell() : int
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			throw new Exception\UntellableStreamException('Stream is not resourceable');
 		}
 
 		$result = \ftell($this->resource);
 
-		if (false === $result)
-		{
+		if (false === $result) {
 			throw new Exception\UntellableStreamException('Unable to get the stream pointer position');
 		}
 
@@ -133,8 +128,7 @@ class Stream implements StreamInterface
 	 */
 	public function isSeekable() : bool
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			return false;
 		}
 
@@ -154,20 +148,17 @@ class Stream implements StreamInterface
 	 */
 	public function rewind() : void
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			throw new Exception\UnseekableStreamException('Stream is not resourceable');
 		}
 
-		if (! $this->isSeekable())
-		{
+		if (! $this->isSeekable()) {
 			throw new Exception\UnseekableStreamException('Stream is not seekable');
 		}
 
 		$result = \fseek($this->resource, 0, \SEEK_SET);
 
-		if (! (0 === $result))
-		{
+		if (! (0 === $result)) {
 			throw new Exception\UnseekableStreamException('Unable to move the stream pointer to beginning');
 		}
 	}
@@ -186,20 +177,17 @@ class Stream implements StreamInterface
 	 */
 	public function seek($offset, $whence = \SEEK_SET) : void
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			throw new Exception\UnseekableStreamException('Stream is not resourceable');
 		}
 
-		if (! $this->isSeekable())
-		{
+		if (! $this->isSeekable()) {
 			throw new Exception\UnseekableStreamException('Stream is not seekable');
 		}
 
 		$result = \fseek($this->resource, $offset, $whence);
 
-		if (! (0 === $result))
-		{
+		if (! (0 === $result)) {
 			throw new Exception\UnseekableStreamException('Unable to move the stream pointer to the given position');
 		}
 	}
@@ -211,8 +199,7 @@ class Stream implements StreamInterface
 	 */
 	public function isWritable() : bool
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			return false;
 		}
 
@@ -236,20 +223,17 @@ class Stream implements StreamInterface
 	 */
 	public function write($string) : int
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			throw new Exception\UnwritableStreamException('Stream is not resourceable');
 		}
 
-		if (! $this->isWritable())
-		{
+		if (! $this->isWritable()) {
 			throw new Exception\UnwritableStreamException('Stream is not writable');
 		}
 
 		$result = \fwrite($this->resource, $string);
 
-		if (false === $result)
-		{
+		if (false === $result) {
 			throw new Exception\UnwritableStreamException('Unable to write to the stream');
 		}
 
@@ -263,8 +247,7 @@ class Stream implements StreamInterface
 	 */
 	public function isReadable() : bool
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			return false;
 		}
 
@@ -286,20 +269,17 @@ class Stream implements StreamInterface
 	 */
 	public function read($length) : string
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			throw new Exception\UnreadableStreamException('Stream is not resourceable');
 		}
 
-		if (! $this->isReadable())
-		{
+		if (! $this->isReadable()) {
 			throw new Exception\UnreadableStreamException('Stream is not readable');
 		}
 
 		$result = \fread($this->resource, $length);
 
-		if (false === $result)
-		{
+		if (false === $result) {
 			throw new Exception\UnreadableStreamException('Unable to read from the stream');
 		}
 
@@ -317,20 +297,17 @@ class Stream implements StreamInterface
 	 */
 	public function getContents() : string
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			throw new Exception\UnreadableStreamException('Stream is not resourceable');
 		}
 
-		if (! $this->isReadable())
-		{
+		if (! $this->isReadable()) {
 			throw new Exception\UnreadableStreamException('Stream is not readable');
 		}
 
 		$result = \stream_get_contents($this->resource);
 
-		if (false === $result)
-		{
+		if (false === $result) {
 			throw new Exception\UnreadableStreamException('Unable to read remainder of the stream');
 		}
 
@@ -348,15 +325,13 @@ class Stream implements StreamInterface
 	 */
 	public function getMetadata($key = null)
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			return null;
 		}
 
 		$metadata = \stream_get_meta_data($this->resource);
 
-		if (! (null === $key))
-		{
+		if (! (null === $key)) {
 			return $metadata[$key] ?? null;
 		}
 
@@ -374,15 +349,13 @@ class Stream implements StreamInterface
 	 */
 	public function getSize() : ?int
 	{
-		if (! \is_resource($this->resource))
-		{
+		if (! \is_resource($this->resource)) {
 			return null;
 		}
 
 		$stats = \fstat($this->resource);
 
-		if (false === $stats)
-		{
+		if (false === $stats) {
 			return null;
 		}
 
@@ -398,20 +371,15 @@ class Stream implements StreamInterface
 	 */
 	public function __toString()
 	{
-		try
-		{
-			if ($this->isReadable())
-			{
-				if ($this->isSeekable())
-				{
+		try {
+			if ($this->isReadable()) {
+				if ($this->isSeekable()) {
 					$this->rewind();
 				}
 
 				return $this->getContents();
 			}
-		}
-		catch (\Throwable $e)
-		{
+		} catch (\Throwable $e) {
 			// ignore...
 		}
 

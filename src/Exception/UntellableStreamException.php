@@ -20,4 +20,5 @@ use RuntimeException;
  * UntellableStreamException
  */
 class UntellableStreamException extends RuntimeException
-{}
+{
+}

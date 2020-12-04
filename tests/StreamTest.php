@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Sunrise\Stream\Tests;
 
@@ -15,15 +15,14 @@ class StreamTest extends TestCase
 {
 	private $handle;
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		$this->handle = \fopen('php://memory', 'r+b');
 	}
 
-	protected function tearDown()
+	protected function tearDown() : void
 	{
-		if (\is_resource($this->handle))
-		{
+		if (\is_resource($this->handle)) {
 			\fclose($this->handle);
 		}
 	}

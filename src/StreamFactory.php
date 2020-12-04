@@ -48,8 +48,7 @@ class StreamFactory implements StreamFactoryInterface
 		// See http://php.net/manual/en/function.fopen.php
 		$resource = @ \fopen($filename, $mode);
 
-		if (false === $resource)
-		{
+		if (false === $resource) {
 			throw new Exception\UnopenableStreamException(
 				\sprintf('Unable to open file "%s" in mode "%s"', $filename, $mode)
 			);

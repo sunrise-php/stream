@@ -20,4 +20,5 @@ use RuntimeException;
  * UnopenableStreamException
  */
 class UnopenableStreamException extends RuntimeException
-{}
+{
+}

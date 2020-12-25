@@ -1,7 +1,7 @@
-## Simple Stream wrapper for PHP 7.1+ based on PSR-7 & PSR-17 (with PHP 8 support)
+## Simple Stream wrapper for PHP 7.1+ (incl. PHP8) based on PSR-7 & PSR-17
 
 [![Gitter](https://badges.gitter.im/sunrise-php/support.png)](https://gitter.im/sunrise-php/support)
-[![Build Status](https://api.travis-ci.com/sunrise-php/stream.svg?branch=master)](https://travis-ci.com/sunrise-php/stream)
+[![Build Status](https://travis-ci.org/sunrise-php/stream.svg?branch=master)](https://travis-ci.org/sunrise-php/stream)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sunrise-php/stream/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/stream/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/sunrise-php/stream/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/stream/?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/sunrise/stream/v/stable)](https://packagist.org/packages/sunrise/stream)

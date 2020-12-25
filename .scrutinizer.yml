@@ -11,5 +11,3 @@ build:
             coverage:
               file: coverage.xml
               format: clover
-  environment:
-    php: 8.0

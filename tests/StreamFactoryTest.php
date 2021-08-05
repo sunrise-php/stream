@@ -65,4 +65,11 @@ class StreamFactoryTest extends TestCase
 
         (new StreamFactory)->createStreamFromFile(__DIR__ . '/nonexistent.file', 'r');
     }
+
+    public function testCreateStreamWithTemporaryFile()
+    {
+        $stream = (new StreamFactory)->createStreamFromTemporaryFile('foo');
+        $this->assertTrue(\file_exists($stream->getMetadata('uri')));
+        $this->assertSame('foo', \file_get_contents($stream->getMetadata('uri')));
+    }
 }

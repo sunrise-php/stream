@@ -1,12 +1,12 @@
 ## Stream wrapper for PHP 7.1+ (incl. PHP 8) based on PSR-7 & PSR-17
 
 [![Gitter](https://badges.gitter.im/sunrise-php/support.png)](https://gitter.im/sunrise-php/support)
-[![Build Status](https://scrutinizer-ci.com/g/sunrise-php/stream/badges/build.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/stream/build-status/master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sunrise-php/stream/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/stream/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/sunrise-php/stream/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/stream/?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/sunrise/stream/v/stable)](https://packagist.org/packages/sunrise/stream)
-[![Total Downloads](https://poser.pugx.org/sunrise/stream/downloads)](https://packagist.org/packages/sunrise/stream)
-[![License](https://poser.pugx.org/sunrise/stream/license)](https://packagist.org/packages/sunrise/stream)
+[![Build Status](https://circleci.com/gh/sunrise-php/stream.svg?style=shield)](https://circleci.com/gh/sunrise-php/stream)
+[![Code Coverage](https://scrutinizer-ci.com/g/sunrise-php/stream/badges/coverage.png?b=main)](https://scrutinizer-ci.com/g/sunrise-php/stream/?branch=main)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sunrise-php/stream/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/sunrise-php/stream/?branch=main)
+[![Total Downloads](https://poser.pugx.org/sunrise/stream/downloads?format=flat)](https://packagist.org/packages/sunrise/stream)
+[![Latest Stable Version](https://poser.pugx.org/sunrise/stream/v/stable?format=flat)](https://packagist.org/packages/sunrise/stream)
+[![License](https://poser.pugx.org/sunrise/stream/license?format=flat)](https://packagist.org/packages/sunrise/stream)
 
 ## Awards
 
@@ -35,6 +35,9 @@ $stream = (new StreamFactory)->createStreamFromFile('http://php.net/', 'rb');
 
 // creates a new stream from the given resource
 $stream = (new StreamFactory)->createStreamFromResource(fopen(...));
+
+// creates a new stream from temporary file (available from version 1.3)
+$stream = (new StreamFactory)->createStreamFromTemporaryFile(?string);
 
 // converts the stream to string
 (string) $stream;

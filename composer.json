@@ -44,8 +44,8 @@
     },
     "scripts": {
         "test": [
-            "phpunit --colors=always --coverage-text",
-            "phpcs"
+            "phpcs",
+            "XDEBUG_MODE=coverage phpunit --colors=always --coverage-text"
         ]
     }
 }

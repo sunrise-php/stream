@@ -26,7 +26,7 @@ class StreamFactory implements StreamFactoryInterface
 {
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function createStream(string $content = '') : StreamInterface
     {
@@ -39,7 +39,7 @@ class StreamFactory implements StreamFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @throws Exception\UnopenableStreamException If the given file does not open
      */
@@ -58,10 +58,40 @@ class StreamFactory implements StreamFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function createStreamFromResource($resource) : StreamInterface
     {
+        return new Stream($resource);
+    }
+
+    /**
+     * Creates temporary file
+     *
+     * The temporary file is automatically removed when the stream is closed or the script ends.
+     *
+     * It isn't the PSR-7 method.
+     *
+     * @link https://www.php.net/manual/en/function.tmpfile.php
+     *
+     * @param null|string $content
+     *
+     * @return StreamInterface
+     *
+     * @throws Exception\UnopenableStreamException
+     */
+    public function createStreamFromTemporaryFile(?string $content = null) : StreamInterface
+    {
+        $resource = \tmpfile();
+        if (false === $resource) {
+            throw new Exception\UnopenableStreamException('Unable to create temporary file');
+        }
+
+        if (null !== $content) {
+            \fwrite($resource, $content);
+            \rewind($resource);
+        }
+
         return new Stream($resource);
     }
 }

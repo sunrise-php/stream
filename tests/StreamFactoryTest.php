@@ -29,11 +29,11 @@ class StreamFactoryTest extends TestCase
 
         $this->assertTrue($stream->isWritable());
 
-        $this->assertEquals('php://temp', $stream->getMetadata('uri'));
+        $this->assertSame('php://temp', $stream->getMetadata('uri'));
 
-        $this->assertEquals(0, $stream->tell());
+        $this->assertSame(0, $stream->tell());
 
-        $this->assertEquals($content, (string) $stream);
+        $this->assertSame($content, (string) $stream);
 
         $stream->close();
     }
@@ -69,7 +69,7 @@ class StreamFactoryTest extends TestCase
     public function testCreateStreamWithTemporaryFile()
     {
         $stream = (new StreamFactory)->createStreamFromTemporaryFile('foo');
-        $this->assertTrue(\file_exists($stream->getMetadata('uri')));
+        $this->assertFileExists($stream->getMetadata('uri'));
         $this->assertSame('foo', \file_get_contents($stream->getMetadata('uri')));
     }
 }

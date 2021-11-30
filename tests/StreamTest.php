@@ -47,7 +47,7 @@ class StreamTest extends TestCase
     {
         $stream = new Stream($this->handle);
 
-        $this->assertEquals($this->handle, $stream->detach());
+        $this->assertSame($this->handle, $stream->detach());
         $this->assertStreamResourceEquals($stream, null);
         $this->assertNull($stream->detach());
     }
@@ -82,13 +82,13 @@ class StreamTest extends TestCase
         $stream = new Stream($this->handle);
 
         \rewind($this->handle);
-        $this->assertEquals(0, $stream->tell());
+        $this->assertSame(0, $stream->tell());
 
         \fwrite($this->handle, $string, $length);
-        $this->assertEquals($length, $stream->tell());
+        $this->assertSame($length, $stream->tell());
 
         \rewind($this->handle);
-        $this->assertEquals(0, $stream->tell());
+        $this->assertSame(0, $stream->tell());
     }
 
     public function testTellUnresourceable()
@@ -121,7 +121,7 @@ class StreamTest extends TestCase
 
         \fwrite($this->handle, $string, $length);
         $stream->rewind();
-        $this->assertEquals(0, \ftell($this->handle));
+        $this->assertSame(0, \ftell($this->handle));
     }
 
     public function testRewindUnresourceable()
@@ -145,7 +145,7 @@ class StreamTest extends TestCase
         \fwrite($this->handle, $string, $length);
         \rewind($this->handle);
         $stream->seek($length, \SEEK_SET);
-        $this->assertEquals($length, \ftell($this->handle));
+        $this->assertSame($length, \ftell($this->handle));
     }
 
     public function testSeekUnresourceable()
@@ -175,10 +175,10 @@ class StreamTest extends TestCase
 
         $stream = new Stream($this->handle);
 
-        $this->assertEquals($length, $stream->write($string));
+        $this->assertSame($length, $stream->write($string));
 
         \rewind($this->handle);
-        $this->assertEquals($string, \fread($this->handle, $length));
+        $this->assertSame($string, \fread($this->handle, $length));
     }
 
     public function testWriteUnresourceable()
@@ -219,7 +219,7 @@ class StreamTest extends TestCase
 
         \fwrite($this->handle, $string);
         \rewind($this->handle);
-        $this->assertEquals($string, $stream->read($length));
+        $this->assertSame($string, $stream->read($length));
     }
 
     public function testReadUnresourceable()
@@ -251,7 +251,7 @@ class StreamTest extends TestCase
 
         \fwrite($this->handle, $string);
         \rewind($this->handle);
-        $this->assertEquals($string, $stream->getContents());
+        $this->assertSame($string, $stream->getContents());
     }
 
     public function testGetContentsUnresourceable()
@@ -278,7 +278,7 @@ class StreamTest extends TestCase
     {
         $stream = new Stream($this->handle);
 
-        $this->assertEquals(
+        $this->assertSame(
             \stream_get_meta_data($this->handle),
             $stream->getMetadata()
         );
@@ -288,12 +288,12 @@ class StreamTest extends TestCase
     {
         $stream = new Stream($this->handle);
 
-        $this->assertEquals(
+        $this->assertSame(
             'php://memory',
             $stream->getMetadata('uri')
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             null,
             $stream->getMetadata('undefined')
         );
@@ -315,10 +315,10 @@ class StreamTest extends TestCase
         $stream = new Stream($this->handle);
 
         \fwrite($this->handle, $string);
-        $this->assertEquals($length, $stream->getSize());
+        $this->assertSame($length, $stream->getSize());
 
         \ftruncate($this->handle, 0);
-        $this->assertEquals(0, $stream->getSize());
+        $this->assertSame(0, $stream->getSize());
     }
 
     public function testGetSizeUnresourceable()
@@ -337,7 +337,7 @@ class StreamTest extends TestCase
         $stream = new Stream($this->handle);
 
         \fwrite($this->handle, $string);
-        $this->assertEquals($string, (string) $stream);
+        $this->assertSame($string, (string) $stream);
     }
 
     public function testToStringUnresourceable()
@@ -345,14 +345,14 @@ class StreamTest extends TestCase
         $stream = new Stream($this->handle);
 
         $stream->close();
-        $this->assertEquals('', (string) $stream);
+        $this->assertSame('', (string) $stream);
     }
 
     public function testToStringUnreadable()
     {
         $stream = new Stream(\STDOUT);
 
-        $this->assertEquals('', (string) $stream);
+        $this->assertSame('', (string) $stream);
     }
 
     public function testExceptions()
@@ -370,6 +370,6 @@ class StreamTest extends TestCase
 
         $property->setAccessible(true);
 
-        return $this->assertEquals($property->getValue($stream), $expected);
+        return $this->assertSame($property->getValue($stream), $expected);
     }
 }

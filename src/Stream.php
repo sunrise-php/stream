@@ -14,7 +14,33 @@ namespace Sunrise\Stream;
 /**
  * Import classes
  */
+use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
+use Sunrise\Stream\Exception\UnreadableStreamException;
+use Sunrise\Stream\Exception\UnseekableStreamException;
+use Sunrise\Stream\Exception\UntellableStreamException;
+use Sunrise\Stream\Exception\UnwritableStreamException;
+use Throwable;
+
+/**
+ * Import functions
+ */
+use function fclose;
+use function feof;
+use function fread;
+use function fseek;
+use function fstat;
+use function ftell;
+use function fwrite;
+use function is_resource;
+use function stream_get_contents;
+use function stream_get_meta_data;
+use function strpbrk;
+
+/**
+ * Import constants
+ */
+use const SEEK_SET;
 
 /**
  * Stream
@@ -25,9 +51,9 @@ class Stream implements StreamInterface
 {
 
     /**
-     * Resource of the stream
+     * The stream resource
      *
-     * @var resource
+     * @var resource|null
      */
     protected $resource;
 
@@ -36,12 +62,12 @@ class Stream implements StreamInterface
      *
      * @param resource $resource
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct($resource)
     {
-        if (! \is_resource($resource)) {
-            throw new \InvalidArgumentException('Invalid stream resource');
+        if (!is_resource($resource)) {
+            throw new InvalidArgumentException('Invalid stream resource');
         }
 
         $this->resource = $resource;
@@ -52,7 +78,7 @@ class Stream implements StreamInterface
      *
      * Returns NULL if the stream already without a resource.
      *
-     * @return null|resource
+     * @return resource|null
      */
     public function detach()
     {
@@ -71,12 +97,12 @@ class Stream implements StreamInterface
      */
     public function close() : void
     {
-        if (! \is_resource($this->resource)) {
+        $resource = $this->detach();
+        if (!is_resource($resource)) {
             return;
         }
 
-        $resource = $this->detach();
-        \fclose($resource);
+        fclose($resource);
     }
 
     /**
@@ -88,11 +114,11 @@ class Stream implements StreamInterface
      */
     public function eof() : bool
     {
-        if (! \is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return true;
         }
 
-        return \feof($this->resource);
+        return feof($this->resource);
     }
 
     /**
@@ -100,19 +126,19 @@ class Stream implements StreamInterface
      *
      * @return int
      *
-     * @throws Exception\UntellableStreamException
+     * @throws UntellableStreamException
      *
      * @link http://php.net/manual/en/function.ftell.php
      */
     public function tell() : int
     {
-        if (! \is_resource($this->resource)) {
-            throw new Exception\UntellableStreamException('Stream is not resourceable');
+        if (!is_resource($this->resource)) {
+            throw new UntellableStreamException('Stream is not resourceable');
         }
 
-        $result = \ftell($this->resource);
-        if (false === $result) {
-            throw new Exception\UntellableStreamException('Unable to get the stream pointer position');
+        $result = ftell($this->resource);
+        if ($result === false) {
+            throw new UntellableStreamException('Unable to get the stream pointer position');
         }
 
         return $result;
@@ -125,38 +151,38 @@ class Stream implements StreamInterface
      */
     public function isSeekable() : bool
     {
-        if (! \is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return false;
         }
 
-        $metadata = \stream_get_meta_data($this->resource);
+        /** @var array{seekable: bool} */
+        $metadata = stream_get_meta_data($this->resource);
 
         return $metadata['seekable'];
     }
 
     /**
-     * Moves the stream pointer to begining
+     * Moves the stream pointer to the beginning
      *
      * @return void
      *
-     * @throws Exception\UnseekableStreamException
+     * @throws UnseekableStreamException
      *
      * @link http://php.net/manual/en/function.rewind.php
      */
     public function rewind() : void
     {
-        if (! \is_resource($this->resource)) {
-            throw new Exception\UnseekableStreamException('Stream is not resourceable');
+        if (!is_resource($this->resource)) {
+            throw new UnseekableStreamException('Stream is not resourceable');
         }
 
-        if (! $this->isSeekable()) {
-            throw new Exception\UnseekableStreamException('Stream is not seekable');
+        if (!$this->isSeekable()) {
+            throw new UnseekableStreamException('Stream is not seekable');
         }
 
-        $result = \fseek($this->resource, 0, \SEEK_SET);
-
-        if (! (0 === $result)) {
-            throw new Exception\UnseekableStreamException('Unable to move the stream pointer to beginning');
+        $result = fseek($this->resource, 0, SEEK_SET);
+        if ($result !== 0) {
+            throw new UnseekableStreamException('Unable to move the stream pointer to beginning');
         }
     }
 
@@ -168,24 +194,23 @@ class Stream implements StreamInterface
      *
      * @return void
      *
-     * @throws Exception\UnseekableStreamException
+     * @throws UnseekableStreamException
      *
      * @link http://php.net/manual/en/function.fseek.php
      */
-    public function seek($offset, $whence = \SEEK_SET) : void
+    public function seek($offset, $whence = SEEK_SET) : void
     {
-        if (! \is_resource($this->resource)) {
-            throw new Exception\UnseekableStreamException('Stream is not resourceable');
+        if (!is_resource($this->resource)) {
+            throw new UnseekableStreamException('Stream is not resourceable');
         }
 
-        if (! $this->isSeekable()) {
-            throw new Exception\UnseekableStreamException('Stream is not seekable');
+        if (!$this->isSeekable()) {
+            throw new UnseekableStreamException('Stream is not seekable');
         }
 
-        $result = \fseek($this->resource, $offset, $whence);
-
-        if (! (0 === $result)) {
-            throw new Exception\UnseekableStreamException('Unable to move the stream pointer to the given position');
+        $result = fseek($this->resource, $offset, $whence);
+        if ($result !== 0) {
+            throw new UnseekableStreamException('Unable to move the stream pointer to the given position');
         }
     }
 
@@ -196,13 +221,14 @@ class Stream implements StreamInterface
      */
     public function isWritable() : bool
     {
-        if (! \is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return false;
         }
 
-        $metadata = \stream_get_meta_data($this->resource);
+        /** @var array{mode: string} */
+        $metadata = stream_get_meta_data($this->resource);
 
-        return ! (false === \strpbrk($metadata['mode'], '+acwx'));
+        return strpbrk($metadata['mode'], '+acwx') !== false;
     }
 
     /**
@@ -214,24 +240,23 @@ class Stream implements StreamInterface
      *
      * @return int
      *
-     * @throws Exception\UnwritableStreamException
+     * @throws UnwritableStreamException
      *
      * @link http://php.net/manual/en/function.fwrite.php
      */
     public function write($string) : int
     {
-        if (! \is_resource($this->resource)) {
-            throw new Exception\UnwritableStreamException('Stream is not resourceable');
+        if (!is_resource($this->resource)) {
+            throw new UnwritableStreamException('Stream is not resourceable');
         }
 
-        if (! $this->isWritable()) {
-            throw new Exception\UnwritableStreamException('Stream is not writable');
+        if (!$this->isWritable()) {
+            throw new UnwritableStreamException('Stream is not writable');
         }
 
-        $result = \fwrite($this->resource, $string);
-
-        if (false === $result) {
-            throw new Exception\UnwritableStreamException('Unable to write to the stream');
+        $result = fwrite($this->resource, $string);
+        if ($result === false) {
+            throw new UnwritableStreamException('Unable to write to the stream');
         }
 
         return $result;
@@ -244,13 +269,14 @@ class Stream implements StreamInterface
      */
     public function isReadable() : bool
     {
-        if (! \is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return false;
         }
 
-        $metadata = \stream_get_meta_data($this->resource);
+        /** @var array{mode: string} */
+        $metadata = stream_get_meta_data($this->resource);
 
-        return ! (false === \strpbrk($metadata['mode'], '+r'));
+        return strpbrk($metadata['mode'], '+r') !== false;
     }
 
     /**
@@ -260,50 +286,50 @@ class Stream implements StreamInterface
      *
      * @return string
      *
-     * @throws Exception\UnreadableStreamException
+     * @throws UnreadableStreamException
      *
      * @link http://php.net/manual/en/function.fread.php
      */
     public function read($length) : string
     {
-        if (! \is_resource($this->resource)) {
-            throw new Exception\UnreadableStreamException('Stream is not resourceable');
+        if (!is_resource($this->resource)) {
+            throw new UnreadableStreamException('Stream is not resourceable');
         }
 
-        if (! $this->isReadable()) {
-            throw new Exception\UnreadableStreamException('Stream is not readable');
+        if (!$this->isReadable()) {
+            throw new UnreadableStreamException('Stream is not readable');
         }
 
-        $result = \fread($this->resource, $length);
-        if (false === $result) {
-            throw new Exception\UnreadableStreamException('Unable to read from the stream');
+        $result = fread($this->resource, $length);
+        if ($result === false) {
+            throw new UnreadableStreamException('Unable to read from the stream');
         }
 
         return $result;
     }
 
     /**
-     * Reads remainder of the stream
+     * Reads the remainder of the stream
      *
      * @return string
      *
-     * @throws Exception\UnreadableStreamException
+     * @throws UnreadableStreamException
      *
      * @link http://php.net/manual/en/function.stream-get-contents.php
      */
     public function getContents() : string
     {
-        if (! \is_resource($this->resource)) {
-            throw new Exception\UnreadableStreamException('Stream is not resourceable');
+        if (!is_resource($this->resource)) {
+            throw new UnreadableStreamException('Stream is not resourceable');
         }
 
-        if (! $this->isReadable()) {
-            throw new Exception\UnreadableStreamException('Stream is not readable');
+        if (!$this->isReadable()) {
+            throw new UnreadableStreamException('Stream is not readable');
         }
 
-        $result = \stream_get_contents($this->resource);
-        if (false === $result) {
-            throw new Exception\UnreadableStreamException('Unable to read remainder of the stream');
+        $result = stream_get_contents($this->resource);
+        if ($result === false) {
+            throw new UnreadableStreamException('Unable to read remainder of the stream');
         }
 
         return $result;
@@ -320,35 +346,37 @@ class Stream implements StreamInterface
      */
     public function getMetadata($key = null)
     {
-        if (! \is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return null;
         }
 
-        $metadata = \stream_get_meta_data($this->resource);
-        if (! (null === $key)) {
-            return $metadata[$key] ?? null;
+        $metadata = stream_get_meta_data($this->resource);
+        if ($key === null) {
+            return $metadata;
         }
 
-        return $metadata;
+        return $metadata[$key] ?? null;
     }
 
     /**
      * Gets the stream size
      *
-     * Returns NULL if the stream without a resource, or if the stream size cannot be determined.
+     * Returns NULL if the stream without a resource,
+     * or if the stream size cannot be determined.
      *
-     * @return null|int
+     * @return int|null
      *
      * @link http://php.net/manual/en/function.fstat.php
      */
     public function getSize() : ?int
     {
-        if (! \is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return null;
         }
 
-        $stats = \fstat($this->resource);
-        if (false === $stats) {
+        /** @var array{size: int}|false */
+        $stats = fstat($this->resource);
+        if ($stats === false) {
             return null;
         }
 
@@ -356,7 +384,7 @@ class Stream implements StreamInterface
     }
 
     /**
-     * Converts the stream to string
+     * Converts the stream to a string
      *
      * @return string
      *
@@ -372,8 +400,7 @@ class Stream implements StreamInterface
 
                 return $this->getContents();
             }
-        } catch (\Throwable $e) {
-            // ignore...
+        } catch (Throwable $e) {
         }
 
         return '';

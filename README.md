@@ -1,4 +1,4 @@
-## Stream wrapper for PHP 7.1+ (incl. PHP 8) based on PSR-7 & PSR-17
+## Stream wrapper for PHP 7.1+ based on PSR-7 and PSR-17
 
 [![Gitter](https://badges.gitter.im/sunrise-php/support.png)](https://gitter.im/sunrise-php/support)
 [![Build Status](https://circleci.com/gh/sunrise-php/stream.svg?style=shield)](https://circleci.com/gh/sunrise-php/stream)
@@ -7,10 +7,6 @@
 [![Total Downloads](https://poser.pugx.org/sunrise/stream/downloads?format=flat)](https://packagist.org/packages/sunrise/stream)
 [![Latest Stable Version](https://poser.pugx.org/sunrise/stream/v/stable?format=flat)](https://packagist.org/packages/sunrise/stream)
 [![License](https://poser.pugx.org/sunrise/stream/license?format=flat)](https://packagist.org/packages/sunrise/stream)
-
-## Awards
-
-[![SymfonyInsight](https://insight.symfony.com/projects/a6301a76-9b35-49a3-adb1-ebbf59f810f2/big.svg)](https://insight.symfony.com/projects/a6301a76-9b35-49a3-adb1-ebbf59f810f2)
 
 ## Installation
 
@@ -45,6 +41,8 @@ $stream = (new StreamFactory)->createStreamFromTemporaryFile(?string);
 // closes the stream
 $stream->close();
 ```
+
+---
 
 ## Test run
 

@@ -1,4 +1,7 @@
 build:
+  environment:
+    php:
+      version: '8.0'
   nodes:
     analysis:
       tests:

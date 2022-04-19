@@ -16,6 +16,14 @@ namespace Sunrise\Stream;
  */
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
+use Sunrise\Stream\Exception\UnopenableStreamException;
+
+/**
+ * Import functions
+ */
+use function fopen;
+use function sprintf;
+use function tmpfile;
 
 /**
  * StreamFactory
@@ -28,70 +36,76 @@ class StreamFactory implements StreamFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createStream(string $content = '') : StreamInterface
-    {
-        $resource = \fopen('php://temp', 'r+b');
-
-        \fwrite($resource, $content);
-        \rewind($resource);
-
-        return new Stream($resource);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws Exception\UnopenableStreamException If the given file does not open
-     */
-    public function createStreamFromFile(string $filename, string $mode = 'r') : StreamInterface
-    {
-        // See http://php.net/manual/en/function.fopen.php
-        $resource = @ \fopen($filename, $mode);
-
-        if (false === $resource) {
-            throw new Exception\UnopenableStreamException(
-                \sprintf('Unable to open file "%s" in mode "%s"', $filename, $mode)
-            );
-        }
-
-        return new Stream($resource);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function createStreamFromResource($resource) : StreamInterface
     {
         return new Stream($resource);
     }
 
     /**
-     * Creates temporary file
+     * {@inheritdoc}
+     *
+     * @throws UnopenableStreamException
+     *         If the file cannot be open.
+     */
+    public function createStreamFromFile(string $filename, string $mode = 'r') : StreamInterface
+    {
+        $resource = @fopen($filename, $mode);
+        if ($resource === false) {
+            throw new UnopenableStreamException(sprintf(
+                'Unable to open file "%s" in mode "%s"',
+                $filename,
+                $mode
+            ));
+        }
+
+        return $this->createStreamFromResource($resource);
+    }
+
+    /**
+     * Creates a temporary file
      *
      * The temporary file is automatically removed when the stream is closed or the script ends.
      *
-     * It isn't the PSR-7 method.
-     *
-     * @link https://www.php.net/manual/en/function.tmpfile.php
-     *
-     * @param null|string $content
+     * @param string|null $content
      *
      * @return StreamInterface
      *
-     * @throws Exception\UnopenableStreamException
+     * @throws UnopenableStreamException
+     *         If a temporary file cannot be created.
+     *
+     * @link https://www.php.net/manual/en/function.tmpfile.php
      */
     public function createStreamFromTemporaryFile(?string $content = null) : StreamInterface
     {
-        $resource = \tmpfile();
-        if (false === $resource) {
-            throw new Exception\UnopenableStreamException('Unable to create temporary file');
+        $resource = tmpfile();
+        if ($resource === false) {
+            throw new UnopenableStreamException('Unable to create temporary file');
         }
 
-        if (null !== $content) {
-            \fwrite($resource, $content);
-            \rewind($resource);
+        $stream = $this->createStreamFromResource($resource);
+        if ($content === null) {
+            return $stream;
         }
 
-        return new Stream($resource);
+        $stream->write($content);
+        $stream->rewind();
+
+        return $stream;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createStream(string $content = '') : StreamInterface
+    {
+        $stream = $this->createStreamFromFile('php://temp', 'r+b');
+        if ($content === '') {
+            return $stream;
+        }
+
+        $stream->write($content);
+        $stream->rewind();
+
+        return $stream;
     }
 }
